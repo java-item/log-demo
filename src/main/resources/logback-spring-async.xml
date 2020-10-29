@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- scan ：开启"热更新" scanPeriod："热更新"扫描周期，默认 60 seconds(60秒)-->
 <configuration scan="true" scanPeriod="300 seconds">
-
     <springProperty scope="context" name="logPath" source="logging.file.path"/>
+    <contextName>log-demo-contextName</contextName>
     <!-- 设置日志文件名-->
     <property name="LOG_NAME" value="log_demo_async" />
     <!-- 最多保留30历史数据-->
-    <property name="LOG_MAX_DAY_HISTORY" value="30" />
+    <property name="LOG_MAX_DAY_HISTORY" value="10" />
     <!--单个日志文件的最大大小-->
     <!--    <property name="LOG_FILE_MAX_SIZE" value="10MB" />-->
-    <property name="LOG_FILE_MAX_SIZE" value="50KB" />
+    <property name="LOG_FILE_MAX_SIZE" value="3KB" />
     <!-- 在有 maxHistory 的限制下，进一步限制所有日志文件大小之和的上限，超过则从最旧的日志开始删除-->
-    <property name="LOG_TOTAL_SIZE_CAP" value="1GB" />
+    <property name="LOG_TOTAL_SIZE_CAP" value="20MB" />
 
 
     <!-- 自定义变量，用于配置日志输出格式，这个格式是尽量偏向 spring boot 默认的输出风格
@@ -51,13 +49,15 @@
             .zip : 将日志文件压缩成zip。不想压缩，可以使用.log 结尾
             如下每天0点以后的第一日志请求触发滚动，将前一天的日志打成 zip 压缩包存放在 logs/app1/backup 下，并命名为 app1_%d_%i.zip
             -->
-            <fileNamePattern>${logPath}/${LOG_NAME}_%d{yyyy-MM-dd}_%i.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/${LOG_NAME}_%d{yyyy-MM-dd HH:mm}_%i.zip</fileNamePattern>
             <!--单个日志文件的最大大小-->
             <maxFileSize>${LOG_FILE_MAX_SIZE}</maxFileSize>
             <!--删除n个滚动周期之前的日志文件(最多保留前n个滚动周期的历史记录)-->
-            <maxHistory>${LOG_MAX_DAY_HISTORY}</maxHistory>
+            <maxHistory>3</maxHistory>
             <!-- 在有 maxHistory 的限制下，进一步限制所有日志文件大小之和的上限，超过则从最旧的日志开始删除-->
             <totalSizeCap>${LOG_TOTAL_SIZE_CAP}</totalSizeCap>
+            <!-- 在只有设置为true并且 maxHistory 不为零才能起效-->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <!-- 日志输出格式 -->
@@ -67,20 +67,20 @@
         </encoder>
     </appender>
 
-    <!-- 异步日志 -->
-    <appender name="ASYNC-ROLLING" class="ch.qos.logback.classic.AsyncAppender">
-        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
-        <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
-        <queueSize>256</queueSize>
-        <!-- 添加附加的appender,最多只能添加一个 -->
-        <appender-ref ref="ROLLING"/>
-    </appender>
+<!--    &lt;!&ndash; 异步日志 &ndash;&gt;-->
+<!--    <appender name="ASYNC-ROLLING" class="ch.qos.logback.classic.AsyncAppender">-->
+<!--        &lt;!&ndash; 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 &ndash;&gt;-->
+<!--        <discardingThreshold>0</discardingThreshold>-->
+<!--        &lt;!&ndash; 更改默认的队列的深度,该值会影响性能.默认值为256 &ndash;&gt;-->
+<!--        <queueSize>256</queueSize>-->
+<!--        &lt;!&ndash; 添加附加的appender,最多只能添加一个 &ndash;&gt;-->
+<!--        <appender-ref ref="ROLLING"/>-->
+<!--    </appender>-->
 
     <!-- 根记录器 -->
     <root level="info">
         <!-- 使用 STDOUT、ROLLING 输出记录的日志-->
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="ASYNC-ROLLING"/>
+        <appender-ref ref="ROLLING"/>
     </root>
 </configuration>

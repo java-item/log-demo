@@ -15,7 +15,7 @@ public class LogController {
     public String test(){
         String text = "日志内容~~~";
         // 重复40遍字符串
-        String join = String.join("", Collections.nCopies(400000, text));
+        String join = String.join("", Collections.nCopies(20, text));
         long l = System.currentTimeMillis();
         log.trace("这是 trace 类型日志... {}",join);
         log.debug("这是 debug 类型日志... {}",join);
