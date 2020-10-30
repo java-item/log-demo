@@ -1,23 +1,17 @@
 <configuration>
-    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/app.log</file>
-        <!-- 启用基于时间的滚动策略：TimeBasedRollingPolicy-->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 设置轮转策略为: 每分钟轮转-->
-            <fileNamePattern>logs/app_%d{yyyy-MM-dd HH:mm}.log</fileNamePattern>
-            <!-- 只保留最近10分钟内的日志-->
-            <maxHistory>10</maxHistory>
-            <!-- 所有日志文件大小之和的上限-->
-            <totalSizeCap>1MB</totalSizeCap>
-            <!--在 appender 启动的时候执行删除历史日志操作-->
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-        </rollingPolicy>
-        <!-- 默认为 ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+    <appender name="CONSOLE"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 拒绝低于 INFO的日志, RACE and DEBUG,但是会显示WARN和ERROR级别日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <encoder>
-            <pattern>%date %-5level -[%thread] %class.%method/%line : %msg%n</pattern>
+            <pattern>
+                %-4relative [%thread] %-5level %logger{30} - %msg%n
+            </pattern>
         </encoder>
     </appender>
     <root level="DEBUG">
-        <appender-ref ref="ROLLING"/>
+        <appender-ref ref="CONSOLE" />
     </root>
 </configuration>
